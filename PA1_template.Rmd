@@ -112,5 +112,25 @@ data[, weekendFlag:= ((date == "Saturday") | (date == "Sunday"))]
 data$dayofWeek <- "Weekdays"
 data$dayofWeek[data$weekendFlag == TRUE] <- "Weekends"
 
-xyplot(steps ~ interval | dayofWeek, data=data, layout = c(1, 2))
+intervalStepsWeek <- ddply(data[data$weekendFlag == FALSE,], .(interval), summarise,
+                    intervalStepsMean = mean(steps, na.rm=TRUE))
+
+intervalStepsWeekend <- ddply(data[data$weekendFlag == TRUE,], .(interval), summarise,
+                    intervalStepsMean = mean(steps, na.rm=TRUE))
+
+par(mfrow = c(2,1))
+with(intervalStepsWeek,
+     plot(interval, intervalStepsMean, type="l",
+          ylim = c(0, 225),
+          xlab = "Interval",
+          ylab = "Steps/interval",
+          main = "Average # of Steps Taken in Each Interval During Week"))
+
+with(intervalStepsWeekend,
+     plot(interval, intervalStepsMean, type="l",
+          ylim = c(0, 225),
+          xlab = "Interval",
+          ylab = "Steps/interval",
+          main = "Average # of Steps Taken in Each Interval During Weekend"))
+
 ```
